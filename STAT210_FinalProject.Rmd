@@ -1,0 +1,53 @@
+---
+title: "STAT210_FinalProject_VideoGames"
+output: html_document
+author: "Armando Flores"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, comment="")
+library(tidyverse)
+library(RCurl)
+library(dplyr)
+library(ggplot2)
+#include other packages needed here
+```
+
+```{r, eval=FALSE, include=FALSE}
+video_games <- getURL("https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/Videogame/videogame_clean.csv") #Gathering raw data from a Github link. 
+videogames<-read.csv(text=video_games) # Reading the from a .csv format into a dataframe.
+
+glimpse(videogames) #Name the variables in the dataframe.
+
+videogames_sales<- videogames %>% # Names the tidied data into a specific dataframe.
+  group_by(Genre, Year_of_Release, Platform) %>% #Groups the dataset by interested variables.
+  summarise(
+    n=n(),
+    sales=sum(Global_Sales,na.rm=TRUE) #Combines individual game title sales into combinations of genre, gaming platform, and release year summaries.
+  )
+
+write_csv(videogames_sales, path="videogames_sales.csv")
+#include data cleaning code here, with comments on what each step is doing the indicators above eval=FALSE and include=FALSE will stop the code from running again when you knit the document while still keeping the code in the document
+#use write_csv() to write your tidy data into a new csv file
+```
+
+```{r}
+vg_sales<-read_csv("videogames_sales.csv")
+#use read_csv() to import your new tidy data include any variable specifications here as needed
+```
+
+## Introduction
+Description of data and problem(s) you are solving.  Include data source(s) here, either through citation or link to webpage.
+
+This dataset of video games information covers variables from Name of the video game, gaming Platform, Year_of_Release, type of Genre, Publisher, sales across North America(NA), Japan(JP), Europe(EU), the other regions, and the global sales numbers. In addition, it also includes Critic Scores, number of Critics, User Scores, Number of Users, Game Developer, and Mature Rating.Then, it has the Platform type, User Rating and Critic Rating. After recently turning 20 years old at the beginning of December, I bought a couple games that I have been looking at for awhile. After my purchase, I pondered what have been the trends of game sales across the two decades that I have been alive, so I decided to look at annual sales of specific genres. I collected my raw data from a public github of datasets, at this link "https://raw.githubusercontent.com/prasertcbs/basic-dataset/master/Videogame/videogame_clean.csv". 
+
+
+## Graphic 1
+The goal for this set of multi-panel plots is to follow the trends of game sales for specific genres across 1999-2019. For the individual panel, it is a line plot of game sales over the release year for one genre type.
+```{r}
+vg_sales%>%
+  filter(Year_of_Release == 1999:2019)%>% #Filters the set of data to include 20 years of data.
+ggplot(aes(y=sales, x= Year_of_Release))+geom_line()+labs(y="Annual Games Sold (in Millions)", x= "Year of Release", title="Game Sales Vs Release Year Across Genres (1999-2019) ")+facet_wrap(.~Genre) #Plots the sales of games over the 20 years across multiple panels for genres. 
+
+#include code for any data manipulation and variable creation used to create the graphic as well as the code for the graph creation - be sure to comment all code with description of steps being completed with each line of code
+```
